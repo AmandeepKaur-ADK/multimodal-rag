@@ -23,7 +23,7 @@ A production-ready AI assistant web application that uses **completely free AI m
 ![AI Chat](screenshots/screenshot-chat.png)
 
 ### AI Response Example
-![AI Response](screenshots/screenshot-response.png)
+![AI Response](screenshots/main-response.png)
 
 ## 🚀 Quick Deploy
 
