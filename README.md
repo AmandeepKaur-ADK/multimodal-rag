@@ -2,15 +2,31 @@
 
 A production-ready AI assistant web application that uses **completely free AI models** with web search capabilities. No API keys required!
 
+## 🚀 Deployment Status
+
+✅ **Live Demo**: [https://multimodal-rag-ai-assistant.onrender.com](https://multimodal-rag-ai-assistant.onrender.com)  
+✅ **GitHub**: [https://github.com/AmandeepKaur-ADK/multimodal-rag](https://github.com/AmandeepKaur-ADK/multimodal-rag)  
+✅ **Platform**: Render (Free Tier)  
+✅ **Status**: Production Ready  
+
+> **Note**: First request may take 30-60 seconds as the AI models load. Subsequent requests are much faster (2-8 seconds).
+
 ## 🚀 One-Click Deploy
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/your-username/free-ai-assistant)
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/your-template-id)
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/AmandeepKaur-ADK/multimodal-rag)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/your-template-id)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/AmandeepKaur-ADK/multimodal-rag)
 
 ## 🌟 Live Demo
 
-🔗 **[Try the Live Demo](https://your-app-name.herokuapp.com)** ← Click here to test it now!
+🔗 **[Try the Live Demo](https://multimodal-rag-ai-assistant.onrender.com)** ← Click here to test it now!
+
+### 📊 Demo Endpoints
+
+- 🌐 **Web Interface**: https://multimodal-rag-ai-assistant.onrender.com
+- 🏥 **Health Check**: https://multimodal-rag-ai-assistant.onrender.com/api/health
+- 📈 **Statistics**: https://multimodal-rag-ai-assistant.onrender.com/api/stats
+- 📚 **GitHub Repository**: https://github.com/AmandeepKaur-ADK/multimodal-rag
 
 ## ✨ Features
 
@@ -27,8 +43,8 @@ A production-ready AI assistant web application that uses **completely free AI m
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
-cd ai-assistant
+git clone https://github.com/AmandeepKaur-ADK/multimodal-rag.git
+cd multimodal-rag
 
 # Start with Docker Compose
 docker-compose up -d
@@ -40,8 +56,8 @@ docker-compose up -d
 
 ```bash
 # Clone and setup
-git clone <your-repo-url>
-cd ai-assistant
+git clone https://github.com/AmandeepKaur-ADK/multimodal-rag.git
+cd multimodal-rag
 
 # Create virtual environment
 python -m venv venv
@@ -161,6 +177,23 @@ WORKERS=2
 
 ## 🧪 Testing
 
+### Test Live Demo
+
+```bash
+# Health check
+curl https://multimodal-rag-ai-assistant.onrender.com/api/health
+
+# Test question
+curl -X POST https://multimodal-rag-ai-assistant.onrender.com/api/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is machine learning?"}'
+
+# Get statistics
+curl https://multimodal-rag-ai-assistant.onrender.com/api/stats
+```
+
+### Test Local Development
+
 ```bash
 # Run health check
 curl http://localhost:5000/api/health
@@ -193,9 +226,10 @@ MIT License - feel free to use this for personal or commercial projects!
 
 ## 🆘 Support
 
-- 📧 Email: your-email@example.com
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/ai-assistant/issues)
-- 📖 Documentation: [Wiki](https://github.com/your-username/ai-assistant/wiki)
+- 📧 Email: amandeepakuramuadk@gmail.com
+- 🐛 Issues: [GitHub Issues](https://github.com/AmandeepKaur-ADK/multimodal-rag/issues)
+- 📖 Documentation: [Wiki](https://github.com/AmandeepKaur-ADK/multimodal-rag/wiki)
+- 🌐 Live Demo: [https://multimodal-rag-ai-assistant.onrender.com](https://multimodal-rag-ai-assistant.onrender.com)
 
 ## 🙏 Acknowledgments
 
