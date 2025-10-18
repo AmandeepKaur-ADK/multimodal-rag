@@ -18,7 +18,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from src.free_rag_pipeline import create_free_rag_pipeline
 from src.validation_manager import validation_manager
 
-# Configure logging
+# Configure logging (create logs directory if it doesn't exist)
+os.makedirs('logs', exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -42,25 +43,21 @@ app_stats = {
     'last_query_time': None
 }
 
-def initialize_pipeline():
-    """Initialize the RAG pipeline once at startup."""
-    global pipeline
-    try:
-        logger.info("Initializing RAG Pipeline for web deployment...")
-        pipeline = create_free_rag_pipeline(
-            model_name="microsoft/DialoGPT-small",
-            enable_web_retrieval=True  # Enable web search for better responses
-        )
-        logger.info("RAG Pipeline initialized successfully for web deployment")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to initialize pipeline: {e}")
-        return False
+# Pipeline initialization moved to get_or_create_pipeline() for lazy loading
 
 @app.route('/')
 def home():
     """Main web interface."""
     return render_template('index.html')
+
+@app.route('/ping')
+def ping():
+    """Simple ping endpoint for basic health check."""
+    return jsonify({
+        'status': 'ok',
+        'message': 'AI Assistant is running',
+        'timestamp': datetime.now().isoformat()
+    })
 
 @app.route('/api/ask', methods=['POST'])
 def ask_question():
@@ -96,10 +93,19 @@ def ask_question():
                 'suggestions': validation_report.recommendations
             }), 400
         
+        # Get or initialize pipeline
+        current_pipeline = get_or_create_pipeline()
+        if current_pipeline is None:
+            return jsonify({
+                'success': False,
+                'error': 'Pipeline initialization failed',
+                'message': 'AI models are currently unavailable. Please try again later.'
+            }), 503
+        
         # Process with pipeline
         start_time = time.time()
         
-        result = pipeline.process_query(
+        result = current_pipeline.process_query(
             text=question,
             max_results=3,
             request_id=f"web_query_{app_stats['total_queries']}"
@@ -159,11 +165,12 @@ def health_check():
         
         # Get pipeline health if available
         pipeline_health = None
-        if pipeline:
+        pipeline_initialized = pipeline is not None
+        if pipeline_initialized:
             try:
                 pipeline_health = pipeline.get_pipeline_health()
             except:
-                pass
+                pipeline_health = "Pipeline health check failed"
         
         # Calculate uptime
         uptime_seconds = (datetime.now() - app_stats['start_time']).total_seconds()
@@ -172,6 +179,7 @@ def health_check():
             'status': 'healthy' if is_ready and len(critical_issues) == 0 else 'degraded',
             'uptime_seconds': uptime_seconds,
             'system_ready': is_ready,
+            'pipeline_initialized': pipeline_initialized,
             'warnings': warnings,
             'critical_issues': critical_issues,
             'pipeline_health': pipeline_health,
@@ -559,6 +567,22 @@ def create_templates():
         with open(html_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
 
+def get_or_create_pipeline():
+    """Get existing pipeline or create new one (lazy initialization)."""
+    global pipeline
+    if pipeline is None:
+        logger.info("Initializing RAG Pipeline on first request...")
+        try:
+            pipeline = create_free_rag_pipeline(
+                model_name="microsoft/DialoGPT-small",
+                enable_web_retrieval=True
+            )
+            logger.info("RAG Pipeline initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize pipeline: {e}")
+            return None
+    return pipeline
+
 def main():
     """Main function to run the web application."""
     print("🚀 STARTING PRODUCTION WEB APPLICATION")
@@ -568,14 +592,6 @@ def main():
     
     # Create logs directory
     os.makedirs('logs', exist_ok=True)
-    
-    # Initialize pipeline
-    print("\n📦 Initializing AI Pipeline...")
-    if not initialize_pipeline():
-        print("❌ Failed to initialize pipeline. Exiting.")
-        return
-    
-    print("✅ AI Pipeline ready!")
     
     # Create templates
     create_templates()
@@ -590,14 +606,18 @@ def main():
     print("   • Comprehensive error handling")
     print("   • Real-time health monitoring")
     print("   • Usage statistics tracking")
+    print("   • Lazy pipeline initialization (faster startup)")
     print("\n🛑 Press Ctrl+C to stop the server")
     print("=" * 60)
     
     try:
+        # Get port from environment (for Render deployment)
+        port = int(os.environ.get('PORT', 5000))
+        
         # Run Flask app
         app.run(
             host='0.0.0.0',  # Allow external connections
-            port=5000,
+            port=port,
             debug=False,  # Production mode
             threaded=True  # Handle multiple requests
         )
