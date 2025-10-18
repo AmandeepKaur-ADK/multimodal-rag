@@ -4,72 +4,67 @@ Uses free AI APIs for responses
 """
 
 import json
-import requests
 from datetime import datetime
+from http.server import BaseHTTPRequestHandler
+import urllib.parse
 
-def handler(request):
-    """Handle chat requests"""
+class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        """Handle CORS preflight"""
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
     
-    # Handle CORS
-    if request.method == 'OPTIONS':
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type',
-            },
-            'body': ''
-        }
-    
-    if request.method != 'POST':
-        return {
-            'statusCode': 405,
-            'headers': {'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({'error': 'Method not allowed'})
-        }
-    
-    try:
-        # Parse request
-        body = json.loads(request.body)
-        question = body.get('question', '').strip()
-        
-        if not question:
-            return {
-                'statusCode': 400,
-                'headers': {'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'error': 'No question provided'})
-            }
-        
-        # Generate AI response using free APIs
-        ai_response = generate_ai_response(question)
-        
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*',
-                'Content-Type': 'application/json'
-            },
-            'body': json.dumps({
-                'success': True,
-                'answer': ai_response['answer'],
-                'confidence': ai_response['confidence'],
-                'model': ai_response['model'],
-                'sources': ai_response.get('sources', []),
-                'timestamp': datetime.now().isoformat()
-            })
-        }
-        
-    except Exception as e:
-        return {
-            'statusCode': 500,
-            'headers': {'Access-Control-Allow-Origin': '*'},
-            'body': json.dumps({
+    def do_POST(self):
+        """Handle POST requests"""
+        try:
+            # Set CORS headers
+            self.send_response(200)
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            
+            # Parse request body
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            body = json.loads(post_data.decode('utf-8'))
+            
+            question = body.get('question', '').strip()
+            
+            if not question:
+                response = {
+                    'success': False,
+                    'error': 'No question provided'
+                }
+            else:
+                # Generate AI response
+                ai_response = generate_ai_response(question)
+                response = {
+                    'success': True,
+                    'answer': ai_response['answer'],
+                    'confidence': ai_response['confidence'],
+                    'model': ai_response['model'],
+                    'sources': ai_response.get('sources', []),
+                    'timestamp': datetime.now().isoformat()
+                }
+            
+            # Send response
+            self.wfile.write(json.dumps(response).encode('utf-8'))
+            
+        except Exception as e:
+            self.send_response(500)
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            
+            error_response = {
                 'success': False,
                 'error': str(e),
                 'message': 'AI service temporarily unavailable'
-            })
-        }
+            }
+            self.wfile.write(json.dumps(error_response).encode('utf-8'))
 
 def generate_ai_response(question):
     """Generate AI response using free services"""
@@ -97,36 +92,8 @@ def generate_ai_response(question):
 
 def get_huggingface_response(question):
     """Try Hugging Face free inference API"""
-    try:
-        # Use free Hugging Face models
-        api_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
-        
-        headers = {
-            "Content-Type": "application/json"
-        }
-        
-        payload = {
-            "inputs": question,
-            "parameters": {
-                "max_length": 200,
-                "temperature": 0.7
-            }
-        }
-        
-        response = requests.post(api_url, headers=headers, json=payload, timeout=10)
-        
-        if response.status_code == 200:
-            result = response.json()
-            if result and len(result) > 0:
-                return {
-                    'answer': result[0].get('generated_text', '').replace(question, '').strip(),
-                    'confidence': 0.8,
-                    'model': 'DialoGPT-medium',
-                    'sources': []
-                }
-    except:
-        pass
-    
+    # Skip external API calls for now to avoid connection issues
+    # This can be enabled later when needed
     return None
 
 def get_knowledge_response(question):
