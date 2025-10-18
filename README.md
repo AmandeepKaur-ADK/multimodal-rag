@@ -4,9 +4,9 @@ A production-ready AI assistant web application that uses **completely free AI m
 
 ## 🚀 Deployment Status
 
-✅ **Live Demo**: [https://multimodal-rag-ai-assistant.onrender.com](https://multimodal-rag-ai-assistant.onrender.com)  
+✅ **Live Demo**: [https://multimodal-rag-khaki.vercel.app](https://multimodal-rag-khaki.vercel.app)  
 ✅ **GitHub**: [https://github.com/AmandeepKaur-ADK/multimodal-rag](https://github.com/AmandeepKaur-ADK/multimodal-rag)  
-✅ **Platform**: Render (Free Tier)  
+✅ **Platform**: Vercel (Free Tier)  
 ✅ **Status**: Production Ready  
 
 > **Note**: First request may take 30-60 seconds as the AI models load. Subsequent requests are much faster (2-8 seconds).
@@ -17,13 +17,13 @@ A production-ready AI assistant web application that uses **completely free AI m
 
 ## 🌟 Live Demo
 
-🔗 **[Try the Live Demo](https://multimodal-rag-ai-assistant.onrender.com)** ← Click here to test it now!
+🔗 **[Try the Live Demo](https://multimodal-rag-khaki.vercel.app)** ← Click here to test it now!
 
 ### 📊 Demo Endpoints
 
-- 🌐 **Web Interface**: https://multimodal-rag-ai-assistant.onrender.com
-- 🏥 **Health Check**: https://multimodal-rag-ai-assistant.onrender.com/api/health
-- 📈 **Statistics**: https://multimodal-rag-ai-assistant.onrender.com/api/stats
+- 🌐 **Web Interface**: https://multimodal-rag-khaki.vercel.app
+- 🏥 **Health Check**: https://multimodal-rag-khaki.vercel.app/health
+- 📈 **API Status**: https://multimodal-rag-khaki.vercel.app/api/status
 - 📚 **GitHub Repository**: https://github.com/AmandeepKaur-ADK/multimodal-rag
 
 ## ✨ Features
