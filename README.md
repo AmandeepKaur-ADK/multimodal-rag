@@ -20,10 +20,11 @@ A production-ready AI assistant web application that uses **completely free AI m
 *Beautiful gradient design with interactive chat interface*
 
 ### AI Chat in Action  
-![AI Chat](screenshots/screenshot-chat.png)
+![AI Chat](screenshots/main-chat.png)
 
 ### AI Response Example
 ![AI Response](screenshots/main-response.png)
+*AI assistant providing detailed, intelligent responses with metadata*
 
 ## 🚀 Quick Deploy
 
