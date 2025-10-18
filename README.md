@@ -2,7 +2,7 @@
 
 A production-ready AI assistant web application that uses **completely free AI models** with intelligent responses. No API keys required!
 
-![AI Assistant Interface](screenshots/screenshot-main.png)
+![AI Assistant Interface](screenshots/main-page.png)
 
 ## 🚀 Live Demo
 
@@ -16,7 +16,8 @@ A production-ready AI assistant web application that uses **completely free AI m
 ## 📸 Screenshots
 
 ### Main Interface
-![Main Interface](screenshots/screenshot-main.png)
+![Main Interface](screenshots/main-page.png)
+*Beautiful gradient design with interactive chat interface*
 
 ### AI Chat in Action  
 ![AI Chat](screenshots/screenshot-chat.png)
