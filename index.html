@@ -75,6 +75,10 @@
             border-radius: 8px; transition: all 0.2s;
         }
         .links a:hover { background: #3d8bfe; transform: translateY(-2px); }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -131,34 +135,98 @@
             document.getElementById('questionInput').value = question;
         }
         
-        function askQuestion() {
+        async function askQuestion() {
             const question = document.getElementById('questionInput').value.trim();
+            const askButton = document.getElementById('askButton');
+            const responseSection = document.getElementById('responseSection');
+            const answer = document.getElementById('answer');
             
             if (!question) {
                 alert('Please enter a question!');
                 return;
             }
             
-            // Show response
-            document.getElementById('answer').innerHTML = `
-                <div style="padding: 20px; text-align: center;">
-                    <h4>🎉 Great Question!</h4>
-                    <p><strong>You asked:</strong> "${question}"</p>
-                    <p style="margin: 15px 0;">Your AI assistant web interface is working perfectly! 
-                    The AI models are ready to be integrated.</p>
-                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 15px 0;">
-                        <strong>✅ What's Working:</strong><br>
-                        • Beautiful web interface ✨<br>
-                        • Question input system 💬<br>
-                        • Response display 📱<br>
-                        • Example questions 💡<br>
-                        • Professional design 🎨
-                    </div>
-                    <p><strong>🚀 Status:</strong> Ready for AI integration!</p>
+            // Show loading state
+            askButton.disabled = true;
+            askButton.textContent = 'Thinking...';
+            
+            answer.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #4facfe; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 15px;">🤖 AI is thinking about your question...</p>
+                    <p style="font-size: 14px; color: #666;">This may take a few seconds</p>
                 </div>
             `;
+            responseSection.style.display = 'block';
             
-            document.getElementById('responseSection').style.display = 'block';
+            try {
+                // Call AI API
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show AI response
+                    answer.innerHTML = `
+                        <div style="padding: 20px;">
+                            <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                <strong>🤖 AI Response:</strong>
+                            </div>
+                            <div style="line-height: 1.6; margin-bottom: 20px;">
+                                ${data.answer.replace(/\n/g, '<br>')}
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #666; border-top: 1px solid #eee; padding-top: 15px;">
+                                <span>🎯 Confidence: ${data.confidence * 100}%</span>
+                                <span>🤖 Model: ${data.model}</span>
+                                <span>⏱️ ${new Date().toLocaleTimeString()}</span>
+                            </div>
+                            ${data.sources && data.sources.length > 0 ? `
+                                <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                                    <strong>📚 Sources:</strong><br>
+                                    ${data.sources.map(source => `<a href="${source.url}" target="_blank" style="color: #4facfe;">${source.title || source.url}</a>`).join('<br>')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    // Show error
+                    answer.innerHTML = `
+                        <div style="padding: 20px; text-align: center;">
+                            <h4 style="color: #dc3545;">⚠️ AI Service Unavailable</h4>
+                            <p><strong>Your question:</strong> "${question}"</p>
+                            <p>The AI service is temporarily unavailable. Please try again in a moment.</p>
+                            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                                <strong>💡 What's still working:</strong><br>
+                                • Beautiful web interface ✨<br>
+                                • Question processing 💬<br>
+                                • Error handling 🛡️<br>
+                                • Professional design 🎨
+                            </div>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                // Network error
+                answer.innerHTML = `
+                    <div style="padding: 20px; text-align: center;">
+                        <h4 style="color: #dc3545;">🌐 Connection Error</h4>
+                        <p><strong>Your question:</strong> "${question}"</p>
+                        <p>Unable to connect to AI service. Please check your internet connection.</p>
+                        <button onclick="askQuestion()" style="margin-top: 15px; padding: 10px 20px; background: #4facfe; color: white; border: none; border-radius: 5px; cursor: pointer;">🔄 Try Again</button>
+                    </div>
+                `;
+            }
+            
+            // Reset button
+            askButton.disabled = false;
+            askButton.textContent = 'Ask AI';
         }
         
         function showDemo() {
