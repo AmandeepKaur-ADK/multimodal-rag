@@ -2,6 +2,16 @@
 
 A production-ready AI assistant web application that uses **completely free AI models** with web search capabilities. No API keys required!
 
+## 🚀 One-Click Deploy
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/your-username/free-ai-assistant)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/your-template-id)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+## 🌟 Live Demo
+
+🔗 **[Try the Live Demo](https://your-app-name.herokuapp.com)** ← Click here to test it now!
+
 ## ✨ Features
 
 - 🆓 **100% Free** - Uses open-source AI models (no OpenAI/API costs)

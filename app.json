@@ -1,0 +1,52 @@
+{
+  "name": "Free AI Assistant",
+  "description": "A production-ready AI assistant using completely free models with web search capabilities",
+  "repository": "https://github.com/your-username/free-ai-assistant",
+  "logo": "https://cdn-icons-png.flaticon.com/512/4712/4712027.png",
+  "keywords": [
+    "ai",
+    "assistant",
+    "chatbot",
+    "free",
+    "machine-learning",
+    "nlp",
+    "web-search",
+    "flask",
+    "python"
+  ],
+  "success_url": "/",
+  "env": {
+    "FLASK_ENV": {
+      "description": "Flask environment",
+      "value": "production"
+    },
+    "FLASK_DEBUG": {
+      "description": "Flask debug mode",
+      "value": "False"
+    },
+    "DEFAULT_MODEL": {
+      "description": "Default AI model to use",
+      "value": "microsoft/DialoGPT-small"
+    },
+    "ENABLE_WEB_SEARCH": {
+      "description": "Enable web search functionality",
+      "value": "True"
+    },
+    "MAX_SEARCH_RESULTS": {
+      "description": "Maximum number of web search results",
+      "value": "3"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "stack": "heroku-22"
+}
