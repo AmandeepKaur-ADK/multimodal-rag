@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: free-ai-assistant
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --timeout 120 web_app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: DEFAULT_MODEL
+        value: microsoft/DialoGPT-small
+      - key: ENABLE_WEB_SEARCH
+        value: "True"
+      - key: MAX_SEARCH_RESULTS
+        value: "3"
+    plan: free
+    region: oregon
+    healthCheckPath: /api/health
