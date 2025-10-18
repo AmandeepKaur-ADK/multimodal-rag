@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Free AI Assistant</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header { 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; opacity: 0.9; }
+        .chat-container { padding: 30px; }
+        .input-section { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 30px;
+            align-items: flex-end;
+        }
+        .question-input { 
+            flex: 1; 
+            padding: 15px; 
+            border: 2px solid #e1e5e9; 
+            border-radius: 12px; 
+            font-size: 16px;
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+        .question-input:focus { 
+            outline: none; 
+            border-color: #4facfe; 
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        .ask-button { 
+            padding: 15px 30px; 
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .ask-button:hover { transform: translateY(-2px); }
+        .ask-button:disabled { 
+            opacity: 0.6; 
+            cursor: not-allowed; 
+            transform: none;
+        }
+        .response-section { 
+            background: #f8f9fa; 
+            border-radius: 12px; 
+            padding: 25px; 
+            margin-top: 20px;
+            display: none;
+        }
+        .response-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px;
+        }
+        .confidence-badge { 
+            background: #28a745; 
+            color: white; 
+            padding: 5px 12px; 
+            border-radius: 20px; 
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .answer { 
+            font-size: 16px; 
+            line-height: 1.6; 
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .sources { margin-top: 20px; }
+        .sources h4 { color: #495057; margin-bottom: 10px; }
+        .source-item { 
+            background: white; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-bottom: 8px;
+            border-left: 4px solid #4facfe;
+        }
+        .source-url { 
+            color: #4facfe; 
+            text-decoration: none; 
+            font-weight: 500;
+        }
+        .source-url:hover { text-decoration: underline; }
+        .loading { 
+            text-align: center; 
+            padding: 40px;
+            color: #6c757d;
+        }
+        .spinner { 
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4facfe;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 15px;
+        }
+        .stats { 
+            display: flex; 
+            justify-content: space-around; 
+            background: #e9ecef; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .stat-item { text-align: center; }
+        .stat-value { font-weight: 600; color: #495057; }
+        .examples { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: #f8f9fa; 
+            border-radius: 12px;
+        }
+        .examples h3 { margin-bottom: 15px; color: #495057; }
+        .example-questions { display: flex; flex-wrap: wrap; gap: 10px; }
+        .example-btn { 
+            background: white; 
+            border: 2px solid #dee2e6; 
+            padding: 8px 15px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .example-btn:hover { 
+            border-color: #4facfe; 
+            color: #4facfe; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Free AI Assistant</h1>
+            <p>Ask me anything! I'll search the web and give you intelligent answers using free AI models.</p>
+        </div>
+        
+        <div class="chat-container">
+            <div class="input-section">
+                <textarea 
+                    id="questionInput" 
+                    class="question-input" 
+                    placeholder="Ask me anything... (e.g., What is artificial intelligence?)"
+                    rows="2"
+                ></textarea>
+                <button id="askButton" class="ask-button" onclick="askQuestion()">Ask AI</button>
+            </div>
+            
+            <div id="responseSection" class="response-section">
+                <div class="response-header">
+                    <h3>🤖 AI Response</h3>
+                    <span id="confidenceBadge" class="confidence-badge"></span>
+                </div>
+                <div id="answer" class="answer"></div>
+                <div id="sources" class="sources"></div>
+                <div id="stats" class="stats"></div>
+            </div>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>🔍 Searching web and generating AI response...</p>
+            </div>
+            
+            <div id="error" class="error" style="display: none;"></div>
+            
+            <div class="examples">
+                <h3>💡 Try these example questions:</h3>
+                <div class="example-questions">
+                    <button class="example-btn" onclick="setQuestion('What is artificial intelligence?')">What is AI?</button>
+                    <button class="example-btn" onclick="setQuestion('How does machine learning work?')">Machine Learning</button>
+                    <button class="example-btn" onclick="setQuestion('Explain quantum computing')">Quantum Computing</button>
+                    <button class="example-btn" onclick="setQuestion('What are neural networks?')">Neural Networks</button>
+                    <button class="example-btn" onclick="setQuestion('Latest developments in AI')">AI News</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setQuestion(question) {
+            document.getElementById('questionInput').value = question;
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('responseSection').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('askButton').disabled = true;
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('askButton').disabled = false;
+        }
+        
+        function showError(message) {
+            document.getElementById('error').innerHTML = message;
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('responseSection').style.display = 'none';
+        }
+        
+        function showResponse(data) {
+            document.getElementById('answer').innerHTML = data.answer;
+            document.getElementById('confidenceBadge').innerHTML = data.confidence + '% Confidence';
+            
+            // Show sources
+            const sourcesDiv = document.getElementById('sources');
+            if (data.sources && data.sources.length > 0) {
+                let sourcesHtml = '<h4>📚 Sources:</h4>';
+                data.sources.forEach((source, index) => {
+                    sourcesHtml += `
+                        <div class="source-item">
+                            <a href="${source.url}" target="_blank" class="source-url">
+                                ${index + 1}. ${source.url}
+                            </a>
+                            <div style="font-size: 12px; color: #6c757d; margin-top: 5px;">
+                                Relevance: ${Math.round(source.similarity_score * 100)}%
+                            </div>
+                        </div>
+                    `;
+                });
+                sourcesDiv.innerHTML = sourcesHtml;
+            } else {
+                sourcesDiv.innerHTML = '';
+            }
+            
+            // Show stats
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">${data.model}</div>
+                    <div>Model</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.processing_time}s</div>
+                    <div>Response Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${data.sources ? data.sources.length : 0}</div>
+                    <div>Sources</div>
+                </div>
+            `;
+            
+            document.getElementById('responseSection').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        async function askQuestion() {
+            const question = document.getElementById('questionInput').value.trim();
+            
+            if (!question) {
+                showError('Please enter a question!');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const response = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showResponse(data);
+                } else {
+                    showError(`❌ ${data.message || data.error}`);
+                }
+                
+            } catch (error) {
+                showError('❌ Network error. Please check your connection and try again.');
+                console.error('Error:', error);
+            }
+            
+            hideLoading();
+        }
+        
+        // Allow Enter key to submit (Shift+Enter for new line)
+        document.getElementById('questionInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                askQuestion();
+            }
+        });
+    </script>
+</body>
+</html>

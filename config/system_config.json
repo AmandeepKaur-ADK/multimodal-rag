@@ -1,0 +1,32 @@
+{
+  "retrieval": {
+    "max_retrieval_time": 30,
+    "max_concurrent_requests": 5,
+    "request_timeout": 10,
+    "min_delay_between_requests": 1.0,
+    "max_retries": 3,
+    "retry_delay": 2.0
+  },
+  "domains": {
+    "allowed_domains": [],
+    "blocked_domains": [],
+    "auto_block_failed_domains": true,
+    "domain_failure_threshold": 3
+  },
+  "resources": {
+    "max_memory_usage_mb": 1024,
+    "max_vector_db_size_mb": 2048,
+    "cleanup_interval_hours": 24,
+    "max_cached_embeddings": 10000,
+    "enable_auto_cleanup": true
+  },
+  "performance": {
+    "enable_auto_adjustment": true,
+    "performance_check_interval": 300,
+    "slow_response_threshold": 10.0,
+    "failure_rate_threshold": 0.2,
+    "adjustment_factor": 0.8
+  },
+  "last_updated": "2025-10-18T11:42:11.958700",
+  "version": "1.0"
+}
